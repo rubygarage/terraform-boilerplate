@@ -48,6 +48,7 @@ resource "aws_elb" "example" {
 
 resource "aws_ecs_service" "example" {
   name            = "example"
+  iam_role        = "${module.iam.ecs-role-arn}"
   cluster         = "${aws_ecs_cluster.example.id}"
   task_definition = "${aws_ecs_task_definition.example.arn}"
 
@@ -55,8 +56,7 @@ resource "aws_ecs_service" "example" {
   deployment_maximum_percent         = 100
   deployment_minimum_healthy_percent = 0
 
-  iam_role   = "${aws_iam_role.ecs-service-role.arn}"
-  depends_on = ["aws_iam_policy_attachment.ecs-service-attachment"]
+  depends_on = ["module.iam"]
 
   load_balancer {
     elb_name       = "${aws_elb.example.name}"

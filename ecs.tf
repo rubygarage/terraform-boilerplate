@@ -13,7 +13,7 @@ resource "aws_launch_configuration" "example" {
   instance_type        = "t2.micro"
   key_name             = "${aws_key_pair.example.key_name}"
   image_id             = "${lookup(var.AMIS, var.AWS_REGION)}"
-  iam_instance_profile = "${aws_iam_instance_profile.ecs-ec2-role.id}"
+  iam_instance_profile = "${module.iam.ec2-role-profile-id}"
 
   security_groups = ["${aws_security_group.example-ecs.id}"]
   user_data       = "#!/bin/bash\necho 'ECS_CLUSTER=${aws_ecs_cluster.example.name}' > /etc/ecs/ecs.config\nstart ecs"

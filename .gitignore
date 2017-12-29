@@ -1,0 +1,16 @@
+key
+key.pub
+
+.DS_Store
+
+/ssh-keys/*
+!/ssh-keys/.keep
+
+/tmp
+/.terraform
+/terraform.tfvars
+/changes.terraform
+
+/terraform.tfstate
+/terraform.tfstate.backup
+/.terraform.tfstate.lock.info

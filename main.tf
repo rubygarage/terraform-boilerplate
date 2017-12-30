@@ -11,6 +11,13 @@ module "ec2" {
   private-subnet-ids = "${module.vpc.private-subnet-ids}"
 }
 
+module "elb" {
+  source = "./modules/elb"
+
+  public-subnet-ids     = "${module.vpc.public-subnet-ids}"
+  elb-security-group-id = "${module.vpc.elb-security-group-id}"
+}
+
 module "iam" {
   source = "./modules/iam"
 }

@@ -13,44 +13,6 @@ resource "aws_ecs_task_definition" "example" {
   container_definitions = "${data.template_file.example.rendered}"
 }
 
-resource "aws_elb" "example" {
-  name = "example"
-
-  listener {
-    lb_port     = 80
-    lb_protocol = "http"
-
-    instance_port     = 8080
-    instance_protocol = "http"
-  }
-
-  health_check {
-    healthy_threshold   = 3
-    unhealthy_threshold = 3
-    interval            = 30
-
-    target  = "HTTP:8080/"
-    timeout = 5
-  }
-
-  cross_zone_load_balancing   = true
-  idle_timeout                = 400
-  connection_draining         = true
-  connection_draining_timeout = 400
-
-  subnets = [
-    "${module.vpc.public-subnet-a-id}",
-    "${module.vpc.public-subnet-b-id}",
-    "${module.vpc.public-subnet-c-id}",
-  ]
-
-  security_groups = ["${module.vpc.elb-security-group-id}"]
-
-  tags {
-    Name = "example"
-  }
-}
-
 resource "aws_ecs_service" "example" {
   name            = "example"
   iam_role        = "${module.iam.ecs-role-arn}"
@@ -64,7 +26,7 @@ resource "aws_ecs_service" "example" {
   depends_on = ["module.iam"]
 
   load_balancer {
-    elb_name       = "${aws_elb.example.name}"
+    elb_name       = "${module.elb.elb_name}"
     container_name = "example"
     container_port = 8080
   }

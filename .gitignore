@@ -1,10 +1,7 @@
-key
-key.pub
-
 .DS_Store
 
-/ssh-keys/*
-!/ssh-keys/.keep
+/modules/ec2/ssh-keys/*
+!/modules/ec2/ssh-keys/.keep
 
 /tmp
 /.terraform

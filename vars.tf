@@ -8,19 +8,3 @@ variable "ECR_IMAGE_VERSION" {
 variable "AWS_REGION" {
   default = "eu-central-1"
 }
-
-variable "AMIS" {
-  type = "map"
-
-  default = {
-    eu-central-1 = "ami-05991b6a"
-  }
-}
-
-variable "PRIVATE_KEY_PATH" {
-  default = "key"
-}
-
-variable "PUBLIC_KEY_PATH" {
-  default = "key.pub"
-}

@@ -1,3 +1,3 @@
-output "elb_name" {
+output "elb-name" {
   value = "${aws_elb.example.name}"
 }

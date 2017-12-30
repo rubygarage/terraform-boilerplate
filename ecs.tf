@@ -15,7 +15,7 @@ resource "aws_launch_configuration" "example" {
   image_id             = "${lookup(var.AMIS, var.AWS_REGION)}"
   iam_instance_profile = "${module.iam.ec2-role-profile-id}"
 
-  security_groups = ["${aws_security_group.example-ecs.id}"]
+  security_groups = ["${module.vpc.ecs-security-group-id}"]
   user_data       = "#!/bin/bash\necho 'ECS_CLUSTER=${aws_ecs_cluster.example.name}' > /etc/ecs/ecs.config\nstart ecs"
 
   lifecycle {
@@ -25,8 +25,13 @@ resource "aws_launch_configuration" "example" {
 
 resource "aws_autoscaling_group" "example" {
   name                 = "example"
-  vpc_zone_identifier  = ["${aws_subnet.example-private.id}"]
   launch_configuration = "${aws_launch_configuration.example.name}"
+
+  vpc_zone_identifier = [
+    "${module.vpc.private-subnet-a-id}",
+    "${module.vpc.private-subnet-b-id}",
+    "${module.vpc.private-subnet-c-id}",
+  ]
 
   min_size = 1
   max_size = 1

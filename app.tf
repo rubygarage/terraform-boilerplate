@@ -38,8 +38,13 @@ resource "aws_elb" "example" {
   connection_draining         = true
   connection_draining_timeout = 400
 
-  subnets         = ["${aws_subnet.example-public.id}"]
-  security_groups = ["${aws_security_group.example-elb.id}"]
+  subnets = [
+    "${module.vpc.public-subnet-a-id}",
+    "${module.vpc.public-subnet-b-id}",
+    "${module.vpc.public-subnet-c-id}",
+  ]
+
+  security_groups = ["${module.vpc.elb-security-group-id}"]
 
   tags {
     Name = "example"

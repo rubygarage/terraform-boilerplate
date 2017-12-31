@@ -1,7 +1,7 @@
-resource "aws_security_group" "example-elb" {
-  name = "example-elb"
+resource "aws_security_group" "elb" {
+  name = "elb"
 
-  vpc_id = "${aws_vpc.example.id}"
+  vpc_id = "${var.vpc_id}"
 
   ingress {
     from_port   = "22"
@@ -32,14 +32,14 @@ resource "aws_security_group" "example-elb" {
   }
 
   tags {
-    Name = "example-elb"
+    Name = "${var.name}-elb"
   }
 }
 
-resource "aws_security_group" "example-ecs" {
-  name = "example-ecs"
+resource "aws_security_group" "ecs" {
+  name = "ecs"
 
-  vpc_id = "${aws_vpc.example.id}"
+  vpc_id = "${var.vpc_id}"
 
   ingress {
     from_port   = "22"
@@ -53,7 +53,7 @@ resource "aws_security_group" "example-ecs" {
     to_port   = "8080"
     protocol  = "tcp"
 
-    security_groups = ["${aws_security_group.example-elb.id}"]
+    security_groups = ["${aws_security_group.elb.id}"]
   }
 
   egress {
@@ -64,6 +64,6 @@ resource "aws_security_group" "example-ecs" {
   }
 
   tags {
-    Name = "example-ecs"
+    Name = "${var.name}-ecs"
   }
 }

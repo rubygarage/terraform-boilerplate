@@ -6,7 +6,7 @@ resource "aws_launch_configuration" "example" {
 
   key_name             = "${aws_key_pair.example.key_name}"
   iam_instance_profile = "${var.ec2-role-profile-id}"
-  security_groups      = ["${var.ecs-security-group-id}"]
+  security_groups      = ["${var.ecs_security_group_id}"]
 
   user_data = "${data.template_cloudinit_config.example.rendered}"
 

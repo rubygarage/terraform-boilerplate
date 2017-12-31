@@ -23,8 +23,8 @@ resource "aws_elb" "example" {
   connection_draining         = true
   connection_draining_timeout = 400
 
-  subnets         = ["${var.public-subnet-ids}"]
-  security_groups = ["${var.elb-security-group-id}"]
+  subnets         = ["${var.public_subnet_ids}"]
+  security_groups = ["${var.elb_security_group_id}"]
 
   tags {
     Name = "example"

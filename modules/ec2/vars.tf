@@ -1,13 +1,13 @@
 variable "ecs-cluster-name" {}
 variable "ec2-role-profile-id" {}
 
-variable "ecs-security-group-id" {}
-variable "elb-security-group-id" {}
+variable "ecs_security_group_id" {}
+variable "elb_security_group_id" {}
 
-variable "public-subnet-ids" {
+variable "public_subnet_ids" {
   type = "list"
 }
 
-variable "private-subnet-ids" {
+variable "private_subnet_ids" {
   type = "list"
 }

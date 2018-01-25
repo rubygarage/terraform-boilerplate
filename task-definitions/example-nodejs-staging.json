@@ -1,0 +1,22 @@
+[
+  {
+    "name": "example-nodejs-staging",
+    "image": "nginx:${IMAGE_TAG}",
+
+    "memoryReservation": 256,
+
+    "portMappings": [
+      {
+        "hostPort": 80,
+        "containerPort": 80
+      }
+    ],
+
+    "environment": [
+      {
+        "name": "ENV_NAME",
+        "value": "ENV_VALUE"
+      }
+    ]
+  }
+]

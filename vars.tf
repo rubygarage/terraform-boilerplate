@@ -1,42 +1,25 @@
 variable "aws_access_key" {}
 variable "aws_secret_key" {}
 
-variable "region" {
-  default = "eu-central-1"
+variable "aws_region" {
+  default = "eu-west-1"
 }
 
-variable "ecr_image_version" {
-  default = "release-1"
+variable "rds_example_staging_password" {}
+variable "rds_example_production_password" {}
+
+variable "ecs_example_rails_staging_image_tag" {
+  default = "latest"
 }
 
-variable "name" {
-  default = "example"
+variable "ecs_example_nodejs_staging_image_tag" {
+  default = "latest"
 }
 
-variable "vpc_cidr_block" {
-  default = "10.0.0.0/16"
+variable "ecs_example_rails_production_image_tag" {
+  default = "latest"
 }
 
-variable "vpc_subnet_availability_zones" {
-  default = [
-    "eu-central-1a",
-    "eu-central-1b",
-    "eu-central-1c",
-  ]
-}
-
-variable "vpc_public_subnet_cidr_blocks" {
-  default = [
-    "10.0.1.0/24",
-    "10.0.2.0/24",
-    "10.0.3.0/24",
-  ]
-}
-
-variable "vpc_private_subnet_cidr_blocks" {
-  default = [
-    "10.0.4.0/24",
-    "10.0.5.0/24",
-    "10.0.6.0/24",
-  ]
+variable "ecs_example_nodejs_production_image_tag" {
+  default = "latest"
 }

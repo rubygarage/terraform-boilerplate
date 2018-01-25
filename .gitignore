@@ -1,13 +1,12 @@
 .DS_Store
 
-/modules/ec2/ssh-keys/*
-!/modules/ec2/ssh-keys/.keep
+*terraform*
 
-/tmp
-/.terraform
-/terraform.tfvars
-/changes.terraform
+/ssh-keys/*
+!/ssh-keys/.keep
 
-/terraform.tfstate
-/terraform.tfstate.backup
-/.terraform.tfstate.lock.info
+/ssl-certificates/*
+!/ssl-certificates/.keep
+
+# /task-definitions/*
+# !/task-definitions/.keep

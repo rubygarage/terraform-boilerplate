@@ -1,0 +1,184 @@
+[
+  {
+    "name": "web-server",
+    "image": "${web_server_ecr_repo}:${environment}",
+    "environment": [
+      {
+        "name": "APP_PORT",
+        "value": "${app_port}"
+      },
+      {
+        "name": "ROOT_PATH",
+        "value": "/home/www/${project_name}/public"
+      },
+      {
+        "name": "SERVER_NAME",
+        "value": "${server_name}"
+      }
+    ],
+    "mountPoints": [
+      {
+        "containerPath": "/home/www/${project_name}/public",
+        "sourceVolume": "public"
+      }
+    ],
+    "portMappings": [
+      {
+        "hostPort": 8080,
+        "containerPort": 8080,
+        "protocol": "tcp"
+      }
+    ],
+    "links": [
+      "app"
+    ],
+    "healthCheck": {
+      "command": [
+        "CMD-SHELL",
+        "ps ax | grep nginx | grep -v grep || exit 1"
+      ],
+      "interval": 30,
+      "retries": 3,
+      "timeout": 5
+    },
+    "logConfiguration": {
+      "logDriver": "awslogs",
+      "options": {
+        "awslogs-group": "${log_group}",
+        "awslogs-region": "${log_region}",
+        "awslogs-stream-prefix": "${environment}"
+      }
+    }
+  },
+
+  {
+    "name": "app",
+    "image": "${app_ecr_repo}:${environment}",
+    "entryPoint": [
+      ".docker/prod/entrypoint.sh"
+    ],
+    "command": ["bundle", "exec", "puma", "-C", "config/puma.rb"],
+    "environment": [
+      {
+        "name": "RAILS_ENV",
+        "value": "${environment}"
+      },
+      {
+        "name": "RACK_ENV",
+        "value": "${environment}"
+      },
+      {
+        "name": "DB_HOST",
+        "value": "${db_host}"
+      },
+      {
+        "name": "DB_USERNAME",
+        "value": "${db_username}"
+      },
+      {
+        "name": "DB_PASSWORD",
+        "value": "${db_password}"
+      },
+      {
+        "name": "RAILS_LOG_TO_STDOUT",
+        "value": "true"
+      },
+      {
+        "name": "REDIS_URL",
+        "value": "${redis_url}"
+      }
+    ],
+    "mountPoints": [
+      {
+        "containerPath": "/home/www/${project_name}/public",
+        "sourceVolume": "public"
+      }
+    ],
+    "portMappings": [
+      {
+        "containerPort": ${app_port},
+        "protocol": "tcp"
+      }
+    ],
+    "healthCheck": {
+      "command": [
+        "CMD-SHELL",
+        "curl -f http://localhost:${app_port} || exit 1"
+      ],
+      "interval": 30,
+      "retries": 3,
+      "timeout": 5
+    },
+    "logConfiguration": {
+      "logDriver": "awslogs",
+      "options": {
+        "awslogs-group": "${log_group}",
+        "awslogs-region": "${log_region}",
+        "awslogs-stream-prefix": "${environment}"
+      }
+    }
+  },
+
+  {
+    "name": "worker",
+    "image": "${app_ecr_repo}:${environment}",
+    "entryPoint": [],
+    "command": ["bundle", "exec", "sidekiq", "-C", "config/sidekiq.yml"],
+    "environment": [
+      {
+        "name": "RAILS_ENV",
+        "value": "${environment}"
+      },
+      {
+        "name": "RACK_ENV",
+        "value": "${environment}"
+      },
+      {
+        "name": "DB_USERNAME",
+        "value": "${db_username}"
+      },
+      {
+        "name": "DB_PASSWORD",
+        "value": "${db_password}"
+      },
+      {
+        "name": "RAILS_LOG_TO_STDOUT",
+        "value": "true"
+      },
+      {
+        "name": "REDIS_URL",
+        "value": "${redis_url}"
+      }
+    ],
+    "mountPoints": [
+      {
+        "containerPath": "/home/www/${project_name}/public",
+        "sourceVolume": "public"
+      }
+    ],
+    "portMappings": [],
+    "dependsOn": [
+      {
+        "containerName": "app",
+        "condition": "HEALTHY"
+      }
+    ],
+    "healthCheck": {
+      "command": [
+        "CMD-SHELL",
+        "ps ax | grep -v grep | grep sidekiq || exit 1"
+      ],
+      "interval": 30,
+      "retries": 3,
+      "timeout": 5
+    },
+    "logConfiguration": {
+      "logDriver": "awslogs",
+      "options": {
+        "awslogs-group": "${log_group}",
+        "awslogs-region": "${log_region}",
+        "awslogs-stream-prefix": "${environment}"
+      }
+    }
+  }
+]

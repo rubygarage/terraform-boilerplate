@@ -1,0 +1,75 @@
+version: "3.6"
+
+volumes:
+  postgres:
+  redis:
+  gems:
+  node_modules:
+
+services:
+  db:
+    image: postgres:12-alpine
+    expose:
+      - 5432
+    environment:
+      POSTGRES_USER: terraform_rails
+      POSTGRES_PASSWORD: terraform_rails_password
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "terraform_rails"]
+
+  in-memory-store:
+    image: redis:5-alpine
+    volumes:
+      - redis:/data
+    expose:
+      - 6379
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+
+  app: &app
+    build:
+      context: ../../
+      dockerfile: .docker/dev/Dockerfile
+    command: bin/rails server -b 0.0.0.0
+    entrypoint: .docker/dev/entrypoint.sh
+    ports:
+      - 3000:3000
+    tty: true
+    stdin_open: true
+    environment:
+      RAILS_ENV: development
+      RACK_ENV: development
+      REDIS_URL: redis://in-memory-store:6379/0
+    volumes:
+      - ../../:/home/www/terraform_rails
+      - /home/www/terraform_rails/node_modules
+      - gems:/usr/local/bundle
+      - node_modules:/home/www/terraform_rails/node_modules
+    tmpfs:
+      - /tmp
+    depends_on:
+      - db
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      interval: 2m
+
+  worker:
+    <<: *app
+    command: bundle exec sidekiq -C config/sidekiq.yml
+    entrypoint: ''
+    ports: []
+    depends_on:
+      - in-memory-store
+      - db
+      - app
+    healthcheck:
+      test: ["CMD-SHELL", "ps ax | grep -v grep | grep sidekiq || exit 1"]
+
+  mailcatcher:
+    image: zolweb/docker-mailcatcher:latest
+    expose:
+      - 1025
+    ports:
+      - 1080:1080
